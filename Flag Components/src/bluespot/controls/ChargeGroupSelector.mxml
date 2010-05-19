@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import bluespot.ColoredVector;
+			import bluespot.ChargeValue;
+			
+			private var _coloredVector:ColoredVector;
+			
+			[Bindable]
+			public function get coloredVector():ColoredVector {
+				return this._coloredVector;
+			}
+			
+			private var watchers:Array = [];
+			
+			public function set coloredVector(coloredVector:ColoredVector):void {
+				this._coloredVector = coloredVector;
+				this.visible = !!this._coloredVector;
+				if(!this._coloredVector)
+					return;
+				this.chargeGroupSelection.selectedValue = this.coloredVector.selectedChargeGroup;
+			}
+			
+			
+			private function chargeGroupSelector(e:Event):void {
+				this.coloredVector.selectedChargeGroup = this.chargeGroupSelection.selection.value as ChargeValue;
+			}
+		]]>
+	</mx:Script>
+	<mx:RadioButtonGroup id="chargeGroupSelection" change="this.chargeGroupSelector(event)" selectedValue="{this.coloredVector.selectedChargeGroup}"/>
+	<mx:Repeater id="chargeValueRepeater" dataProvider="{this.coloredVector.chargeGroups}">
+		<mx:RadioButton groupName="chargeGroupSelection" value="{chargeValueRepeater.currentItem}" label="{chargeValueRepeater.currentItem.label}"/>
+	</mx:Repeater>
+</mx:VBox>

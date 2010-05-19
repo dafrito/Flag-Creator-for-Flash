@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" initialize="initializer()" creationComplete="creationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			import bluespot.ColorValue;
+			
+			private function initializer():void {
+			}
+			
+			private function creationComplete():void {
+				this.attachPicker();
+			}
+			
+			private var watchers:Array = [];
+			private var _colorValue:ColorValue;
+			
+			[Bindable]
+			public function get colorValue():ColorValue {
+				return this._colorValue;
+			}
+			
+			public function set colorValue(colorValue:ColorValue):void {
+				if(colorValue === this._colorValue)
+					return;
+				if(this._colorValue) {
+					// Clean up the old colorValue stuff.
+					for each(var watcher:ChangeWatcher in this.watchers)
+						watcher.unwatch();
+				}
+				this._colorValue = colorValue;
+				if(this._colorValue) {
+					this.watchers = [
+						BindingUtils.bindProperty(this, "label", this.colorValue, "label")
+					];
+					this.attachPicker();
+				}	  
+			}
+			
+			private function attachPicker():void {
+				if(!this.colorValue || !this.picker)
+					return;
+				this.watchers.push(
+					BindingUtils.bindProperty(this.picker, "selectedColor", this.colorValue, "computedValue")
+				);
+			}
+			
+			private function pickerListener(e:Event):void {
+				this.colorValue.explicitValue = this.picker.selectedColor; 
+			}
+			
+			private function clear():void {
+				this.colorValue.explicitColor = null;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:ColorPicker id="picker" change="this.pickerListener(event);"/>
+	<mx:Label text="{this.label}"/>
+	<mx:LinkButton label="Clear" click="this.clear();"/>
+</mx:HBox>

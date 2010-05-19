@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:bs="bluespot.controls.*" visible="false" initialize="initializer()">
+	<mx:Script>
+		<![CDATA[
+			import bluespot.ColoredVectorDefinition;
+			import mx.collections.ArrayCollection;
+			import bluespot.ChargeValueGroup;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.binding.utils.BindingUtils;
+			import bluespot.ChargeValue;
+			import bluespot.ColoredVector;
+			
+			private function initializer():void {
+			}
+			
+			private var watchers:Array = [];
+			
+			/**
+			 * A list of all our registered charges.
+			 */
+			[Bindable]
+			public var charges:ArrayCollection;
+			
+			/**
+			 * The current working ColoredVector.
+			 */
+			private var _coloredVector:ColoredVector;
+			
+			/**
+			 * The selected charge, or charge group, for this ColoredVector.
+			 */
+			[Bindable]
+			public var selectedCharge:ChargeValue;
+			
+			[Bindable]
+			public function get coloredVector():ColoredVector {
+				return this._coloredVector;
+			}
+			
+			public function set coloredVector(coloredVector:ColoredVector):void {
+				this._coloredVector = coloredVector;
+				this.visible = !!this._coloredVector;
+				// Clean up our old ColoredVector as applicable.
+				for each(var watcher:ChangeWatcher in this.watchers)
+					watcher.unwatch();
+				if(!this._coloredVector) {
+					// No coloredVector, so hide us.
+					this.visible = false;
+				}
+				this.watchers = [
+					BindingUtils.bindSetter(this.selectedChargeGroupListener, this.coloredVector, "selectedChargeGroup")
+				];
+			}
+			
+			/**
+			 * Listens for changes in the selectedChargeGroup of our ColoredVector.
+			 * 
+			 * @param chargeGroup The new ChargeValue or ChargeValueGroup to be selected.
+			 */
+			private function selectedChargeGroupListener(chargeGroup:ChargeValue):void {
+				// Sanitize any old values to keep in sync.
+				this.selectedCharge = null;
+				if(!chargeGroup) {
+					// No charge group, so just return after hiding. 
+					this.visible = false;
+					return;
+				}
+				this.visible = true;
+				if(chargeGroup is ChargeValueGroup) {
+					// It's a group, so add our combo-box to select its children.
+					if(!this.chargeValueCombo.parent)
+						this.chargeViewer.addChildAt(this.chargeValueCombo, 0);
+					// ..And set our charge-values list to the chargeGroup's.
+					this.chargeValueCombo.dataProvider = (chargeGroup as ChargeValueGroup).chargeList;
+					this.selectedCharge = (chargeGroup as ChargeValueGroup).chargeList[0];
+				} else {
+					// It's just a ChargeValue, so remove the combo-box.
+					if(this.chargeValueCombo.parent)
+						this.chargeViewer.removeChild(this.chargeValueCombo);
+					// Set the combo-box to null for completeness.
+					this.chargeValueCombo.dataProvider = null;
+					this.selectedCharge = chargeGroup;
+				}
+			}
+			
+			private function chargePicker(e:Event):void {
+				var definition:ColoredVectorDefinition = ColoredVectorDefinition(this.chargeList.selectedItem);
+				this.coloredVector.setCharge(definition.create(), this.selectedCharge.position);
+			}
+			
+			private function chargeValueListener(e:Event):void {
+				this.selectedCharge = this.chargeValueCombo.selectedItem as ChargeValue;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="chargeViewer" width="344" horizontalAlign="center">
+		<mx:ComboBox id="chargeValueCombo" width="100%" selectedItem="{this.selectedCharge}" change="this.chargeValueListener(event)"/>
+		<mx:TileList id="chargeList" height="100%" width="95%" dataProvider="{this.charges}" change="this.chargePicker(event);">
+			<mx:itemRenderer>
+				<mx:Component>
+					<bs:ColoredVectorBase data="{this.data}" height="100"/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:TileList>
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg
+	width="750"
+	height="500"
+	xmlns="http://www.w3.org/2000/svg">
+	
+<!--
+	This file is in the public domain
+-->
+
+	<rect height="125" width="750" fill="#db000d" x="0" y="0" />
+	<rect height="250" width="750" fill="#fbea0e" x="0" y="125" />
+	<rect height="125" width="750" fill="#db000d" x="0" y="375" />
+	
+</svg>

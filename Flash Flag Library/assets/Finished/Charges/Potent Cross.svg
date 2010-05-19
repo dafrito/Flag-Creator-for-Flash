@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg width="560" height="560" viewBox="0 0 560 560" style="stroke:none">
+<title>Heraldic Cross Potent</title>
+<desc>Heraldic Cross Potent</desc>
+<rect style="fill:#ffffff" x="0" y="0" width="560" height="560"/>
+<path style="fill:#000000" d="M195,540
+V505
+H250
+V310
+H55
+V365
+H20
+V195
+H55
+V250
+H250
+V55
+H195
+V20
+H365
+V55
+H310
+V250
+H505
+V195
+H540
+V365
+H505
+V310
+H310
+V505
+H365
+V540Z"/>
+</svg>

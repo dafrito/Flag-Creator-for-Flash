@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:flags="flags.*" layout="horizontal" horizontalAlign="left" xmlns:bs="bluespot.controls.*" initialize="initializer()">
+	<mx:Script>
+		<![CDATA[
+			import bluespot.ColoredVector;
+		]]>
+	</mx:Script>
+	<mx:Script>
+		<![CDATA[
+			import bluespot.controls.ColorGroupSelector;
+			import bluespot.controls.ColorSelector;
+			import mx.skins.halo.HaloBorder;
+			import mx.controls.ColorPicker;
+			import mx.core.UIComponent;
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.SortField;
+			import mx.collections.Sort;
+			import mx.collections.ArrayCollection;
+			import bluespot.*;
+			
+			private function initializer():void {
+				// Get a bindable flag-list, sorted alphabetically.
+				this.flags.source = ColoredVector.getRegistryList("Flag");
+				
+				// Do the same for our Charges, but don't sort it.
+				this.charges.source = ColoredVector.getRegistryList("Charge");
+			}	
+					
+			[Bindable]
+			private var flags:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var charges:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var coloredVector:ColoredVector;
+			
+			private function flagListListener(e:Event):void {
+				var definition:ColoredVectorDefinition = this.flagList.selectedItem as ColoredVectorDefinition; 
+				this.flagViewer.sourceName = definition.sourceName;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Binding source="this.flagViewer.coloredVector" destination="this.coloredVector"/>
+	<mx:VBox height="100%">
+		<mx:Label textAlign="center" text="Flag Templates" width="100%" fontWeight="bold" fontSize="14"/>
+		<mx:TileList id="flagList" dataProvider="{this.flags}" change="this.flagListListener(event);" height="100%" width="211" verticalAlign="top" direction="horizontal" columnCount="2">
+			<mx:itemRenderer>
+				<mx:Component>
+					<bs:ColoredVectorBase data="{this.data}" height="100"/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:TileList>
+	</mx:VBox>
+	<mx:VBox height="100%">
+		<mx:Label textAlign="center" text="Flag Designer" width="100%" fontWeight="bold" fontSize="14"/>
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox height="100%">
+				<bs:ColoredVectorBase id="flagViewer" sourceType="Flag" width="750" height="330" verticalAlign="top" horizontalAlign="center"/>
+				<mx:HBox width="100%" height="100%">
+					<mx:VBox width="50%" height="100%">
+						<mx:FormHeading label="Flag Colors" width="100%"/>
+						<bs:ColorGroupSelector id="flagColorPickers" colorValues="{this.coloredVector.colorList}" paddingTop="7" width="100%"/>
+						<bs:ColorGroupSelector id="chargeColorPicker" colorValues="{this.chargeSelector.selectedCharge.charge.colorList}" paddingTop="7" width="100%"/>
+					</mx:VBox>
+					<mx:VRule height="100%"/>
+					<mx:VBox width="50%" height="100%">
+						<mx:FormHeading label="Charge Group Selection" width="100%"/>
+						<bs:ChargeGroupSelector coloredVector="{this.coloredVector}"/>						
+					</mx:VBox>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+	<mx:VBox height="100%">
+		<mx:Label textAlign="center" text="Charge Picker" width="100%" fontWeight="bold" fontSize="14"/>
+		<bs:ChargeSelector id="chargeSelector" height="100%" width="100%" coloredVector="{this.coloredVector}" charges="{this.charges}"/>
+	</mx:VBox>
+</mx:Application>

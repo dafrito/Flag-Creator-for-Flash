@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" initialize="initializer()" xmlns:bs="bluespot.controls.*" creationComplete="creationComplete();">
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import bluespot.ColorValueGroup;
+			import bluespot.ColorValue;
+			
+			private function initializer():void {
+			}
+			
+			private function creationComplete():void {
+			}
+			
+			private var _colorValueGroup:ColorValueGroup;
+			
+			public function get colorValueGroup():ColorValueGroup {
+				return this._colorValueGroup;
+			}
+			
+			public function set colorValueGroup(colorValueGroup:ColorValueGroup):void {
+				if(colorValueGroup === this.colorValueGroup)
+					return;
+				this._colorValueGroup = colorValueGroup;
+				this.colorValues = this.colorValueGroup ? 
+					this.colorValueGroup.values :
+					null;
+			}
+			
+			private var _colorValues:Array;
+			
+			public function get colorValues():Array {
+				return this._colorValues;
+			}
+			
+			public function set colorValues(colorValues:Array):void {
+				if(this.colorValues === colorValues)
+					return;
+				if(this._colorValues) {
+					// Dispose of our old colorvalues...
+					for(var i:uint = 0; i < this.numChildren; i++) {
+						var selector:Object = this.getChildAt(i);
+						if(selector is ColorGroupSelector) {
+							selector.colorValueGroup = null;
+						} else {
+							selector.colorValue = null;
+						}
+					}
+					this.removeAllChildren();
+				}
+				this._colorValues = colorValues;
+				if(!this.colorValues) {
+					return;
+				}
+				for each(var colorValue:ColorValue in this.colorValues) {
+					var colorSelector:ColorSelector = new ColorSelector();
+					
+					colorSelector.colorValue = colorValue; 
+					this.addChild(colorSelector);
+					
+					if(!(colorValue is ColorValueGroup))
+						continue;
+					
+					var colorGroupSelector:ColorGroupSelector = new ColorGroupSelector();
+					colorGroupSelector.setStyle("paddingLeft", 15);
+					colorGroupSelector.colorValueGroup = colorValue as ColorValueGroup;
+					this.addChild(colorGroupSelector);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:VBox>
